@@ -5,13 +5,13 @@ export function mount(el, ctx) {
     <div class="ui-page" style="max-width:980px">
       <h1 class="ui-h1">${T("Images IA", "AI images")}</h1>
       <div class="ui-card"><div class="ui-stack" style="padding:16px;gap:12px">
-        <textarea class="ui-textarea" name="prompt" rows="3" placeholder="${T("Décris l'image (l'anglais donne de meilleurs résultats)", "Describe the image")}"></textarea>
-        <div class="ui-row" style="flex-wrap:wrap;gap:8px">
-          <select class="ui-select" name="model"></select>
+        <textarea class="ui-textarea" name="prompt" rows="3" placeholder="${T("Décris l'image (l'anglais donne de meilleurs résultats) - Ctrl+Entrée pour générer", "Describe the image - Ctrl+Enter to generate")}"></textarea>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+          <select class="ui-select" name="model" style="width:auto;min-width:150px"></select>
           <input class="ui-input" name="steps" type="number" min="1" max="8" placeholder="steps" style="width:90px">
           <input class="ui-input" name="seed" type="number" placeholder="seed" style="width:110px">
-          <select class="ui-select" name="size"><option value="1024x1024">1024×1024</option><option value="768x512">768×512</option><option value="512x768">512×768</option><option value="1024x576">1024×576</option><option value="512x512">512×512</option></select>
-          <span class="ui-spacer"></span>
+          <select class="ui-select" name="size" style="width:auto;min-width:150px"><option value="1024x1024">1024×1024</option><option value="768x512">768×512</option><option value="512x768">512×768</option><option value="1024x576">1024×576</option><option value="512x512">512×512</option></select>
+          <span style="flex:1"></span>
           <button class="ui-btn" name="go">${T("Générer", "Generate")}</button>
         </div>
         <div class="ui-small ui-muted" data-q></div>
@@ -80,6 +80,7 @@ export function mount(el, ctx) {
   });
   const sync = () => { const m = models[q("model").value] || {}; q("size").disabled = !m.sized; q("seed").disabled = !m.seed; };
   q("model").addEventListener("change", sync);
+  q("prompt").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) q("go").click(); });
   q("go").addEventListener("click", async () => {
     const prompt = q("prompt").value.trim();
     if (!prompt) return;
