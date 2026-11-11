@@ -5,9 +5,12 @@
 Free AI image generation for [Harness Maxxing](https://harness-maxxing.com), powered by Cloudflare Workers AI
 (FLUX.1 schnell and SDXL Lightning). No credit card, about 170 images a day on the free plan.
 
-- **Page "AI images"**: prompt, model, steps, seed, size, a gallery with thumbnails, the daily quota gauge.
-- **`genimage` command**: `genimage "a lighthouse at dawn, watercolor" --model sdxl --size 768x512`, usable by Claude in any session or script.
-- **Skill** (optional) so Claude knows how and when to use it.
+- **Page "AI images"**: prompt, 4 models, 16 style presets, ratios, steps, seed, 1-4 variants, optional 2x upscale, image-to-image
+  ("Edit"), a gallery with thumbnails, favorites, prompt search, zip of favorites, the daily quota gauge and the settings below.
+- **`genimage` command**: `genimage "a lighthouse at dawn" --style watercolor --ratio 16:9`, usable by Claude in any session, agent or script.
+- **Skill** (optional) with a prompt-writing guide, so Claude turns a short request into an effective English prompt.
+- **Guard rails for agents**: a daily cap per caller, a share of the quota kept for the page, a per-minute limit.
+- **Optional fallback** (off by default): free AI Horde when Cloudflare is out of quota or fails.
 
 ## Requirements
 
@@ -17,7 +20,7 @@ Free AI image generation for [Harness Maxxing](https://harness-maxxing.com), pow
 
 ## What is sent, and where
 
-Only your prompt and the generation settings go to `api.cloudflare.com` (with your token). Images come back and are
+Only your prompt and the generation settings go to `api.cloudflare.com` (with your token). If you switch on the **AI Horde fallback** in the page settings, the prompt also goes to `aihorde.net` (volunteers' machines, anonymous, 512x512 at most) when Cloudflare fails; it is off by default. Images come back and are
 stored on your server in `<workspace>/images/YYYY-MM/`; the history (prompt, model, size, cost, path) is in the
 extension's state directory. Nothing else leaves the server. This extension runs code on the server (`api.py`,
 `genimage.py`, both short and stdlib only): read them first.
@@ -27,7 +30,7 @@ extension's state directory. Nothing else leaves the server. This extension runs
 Free plan: 10,000 neurons a day (reset 00:00 UTC), roughly 170 FLUX images at 1024x1024. Beyond that Cloudflare
 refuses the request: the command stops with an error and nothing is billed. The counter shown is computed
 locally (FLUX cost from Cloudflare's published prices, SDXL is an estimate); Cloudflare stays the authority.
-FLUX schnell is always 1024x1024 and takes no seed; SDXL Lightning takes sizes from 256 to 1024 and a seed.
+FLUX schnell is always 1024x1024 (cropped to the ratio) and takes no seed; SDXL Lightning, FLUX.2 klein and DreamShaper take sizes from 256 to 1024; SDXL and DreamShaper take a seed. FLUX.2 klein costs more (estimated ~105 neurons at 1024x1024). The FLUX.1 cost comes from Cloudflare's price list; the others are estimates.
 
 ## Install
 
