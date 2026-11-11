@@ -20,9 +20,9 @@ Free AI image generation for [Harness Maxxing](https://harness-maxxing.com), pow
 
 ## What is sent, and where
 
-Only your prompt and the generation settings go to `api.cloudflare.com` (with your token). If you switch on the **AI Horde fallback** in the page settings, the prompt also goes to `aihorde.net` (volunteers' machines, anonymous, 512x512 at most) when Cloudflare fails; it is off by default. Images come back and are
+Only your prompt and the generation settings go to `api.cloudflare.com` (with your token); in image-to-image mode the source image is sent there too. If you switch on the **AI Horde fallback** in the page settings, the prompt also goes to `aihorde.net` (volunteers' machines, anonymous, 512x512 at most) when Cloudflare fails; the result is then downloaded from a URL chosen by Horde. It is off by default. Images come back and are
 stored on your server in `<workspace>/images/YYYY-MM/`; the history (prompt, model, size, cost, path) is in the
-extension's state directory. Nothing else leaves the server. This extension runs code on the server (`api.py`,
+extension's state directory (`GENIMAGE_STATE` to change it; `MAXXING_WORKSPACE` sets `<workspace>`). Nothing else leaves the server. This extension runs code on the server (`api.py`,
 `genimage.py`, both short and stdlib only): read them first.
 
 ## Limits
@@ -35,9 +35,9 @@ FLUX schnell is always 1024x1024 (cropped to the ratio) and takes no seed; SDXL 
 ## Install
 
 ```bash
-git clone https://github.com/T4nguy01/harness-images /root/maxxing/extensions/images
-ln -s /root/maxxing/extensions/images/genimage.py /usr/local/bin/genimage
-ln -s /root/maxxing/extensions/images/skill/genimage /root/maxxing/.claude/skills/genimage   # optional
+git clone https://github.com/T4nguy01/harness-images <workspace>/extensions/images
+ln -s <workspace>/extensions/images/genimage.py /usr/local/bin/genimage
+ln -s <workspace>/extensions/images/skill/genimage <workspace>/.claude/skills/genimage   # optional
 ```
 
 Then Settings -> Pages -> Rescan, and add the two keys in Settings -> Keys. Note the skill adds about 300 characters
@@ -49,8 +49,8 @@ For an agent in a sandbox: give it the two keys (its `keys` list) and the domain
 ## Uninstall
 
 ```bash
-rm /usr/local/bin/genimage /root/maxxing/.claude/skills/genimage
-rm -rf /root/maxxing/extensions/images /root/maxxing/images   # the last one deletes your generated pictures
+rm /usr/local/bin/genimage <workspace>/.claude/skills/genimage
+rm -rf <workspace>/extensions/images <workspace>/images   # the last one deletes your generated pictures
 ```
 
 ## License

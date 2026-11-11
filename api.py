@@ -28,6 +28,7 @@ def handle(ctx, method, path, query, body):
     g = _lib()
     g.STATE = Path(ctx["state_dir"])
     g.OUT_ROOT = Path(ctx["workspace"]) / "images"
+    g.VAULT = ctx["secret"]
     b = body or {}
     if path == "status" and method == "GET":
         return _status(g, query)
@@ -46,6 +47,8 @@ def handle(ctx, method, path, query, body):
         except (ValueError, RuntimeError, OSError) as e:
             return 400, {"error": "failed", "message": str(e), "done": len(items)}
         return {"items": items, "quota": g.quota()}
+    if path.split("/")[0] in ("thumb", "fav", "item", "upscale") and not g.valid_id(path.partition("/")[2]):
+        return 400, {"error": "bad_id"}
     if path.startswith("thumb/") and method == "GET":
         t = g.thumb(path[6:])
         return {"src": t} if t else (404, {"error": "not_found"})

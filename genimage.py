@@ -7,20 +7,39 @@ genimage --upscale image.jpg        2x Lanczos + sharpen (ImageMagick)
 genimage --quota | --styles | --config
 Keys (Settings -> Keys): CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_API_TOKEN.
 """
-import argparse, base64, json, os, subprocess, sys, time, urllib.error, urllib.request, uuid, zipfile
+import argparse, base64, fcntl, json, os, re, subprocess, sys, time, urllib.error, urllib.request, uuid, zipfile
 from pathlib import Path
 
 
 def _workspace():
-    for c in (os.environ.get("MAXXING_WORKSPACE"), "/root/maxxing", str(Path.home() / "maxxing")):
+    """MAXXING_WORKSPACE, else <workspace> found from the extension folder (<workspace>/extensions/<id>), else ~/maxxing."""
+    here = Path(__file__).absolute().parent
+    for c in (os.environ.get("MAXXING_WORKSPACE"), here.parent.parent if here.parent.name == "extensions" else None, Path.home() / "maxxing"):
         if c and Path(c).is_dir():
             return Path(c)
     return Path.home()
 
 
 def _state_dir():
-    d = Path("/var/lib/claude-maxxing/extensions/images")
-    return d if d.parent.is_dir() and os.access(d.parent, os.W_OK) else Path.home() / ".local/share/genimage"
+    """GENIMAGE_STATE, else the server's extension state folder if it exists (CLAUDE_MAXXING_STATE or the default), else ~/.local/share/genimage."""
+    for c in (os.environ.get("CLAUDE_MAXXING_STATE"), "/var/lib/claude-maxxing"):
+        if c and (Path(c) / "extensions/images").is_dir():
+            return Path(c) / "extensions/images"
+    return Path.home() / ".local/share/genimage"
+
+
+MAX_IMAGE = 20 * 1024 * 1024
+
+
+def _kind(data):
+    return "png" if data[:4] == b"\x89PNG" else "webp" if data[:4] == b"RIFF" and data[8:12] == b"WEBP" else "jpg" if data[:3] == b"\xff\xd8\xff" else None
+
+
+ID_RE = re.compile(r"[A-Za-z0-9_-]{1,64}")
+
+
+def valid_id(x):
+    return isinstance(x, str) and ID_RE.fullmatch(x) is not None
 
 
 STATE = Path(os.environ.get("GENIMAGE_STATE") or _state_dir())  # api.py sets it from ctx["state_dir"]
@@ -100,6 +119,18 @@ def _write(items):
     tmp.replace(STATE / "history.jsonl")
 
 
+def _locked(fn):
+    """Run a read-modify-write of the history under a file lock (CLI and page can run at the same time)."""
+    STATE.mkdir(parents=True, exist_ok=True)
+    with open(STATE / "history.lock", "w") as lk:
+        fcntl.flock(lk, fcntl.LOCK_EX)
+        return fn()
+
+
+def _append(item):
+    _locked(lambda: _write(_read() + [item]))
+
+
 def history(limit=80, q="", fav=False):
     items = list(reversed(_read()))
     if q:
@@ -146,7 +177,12 @@ def _check_limits(caller, cost):
 
 
 # ---------------------------------------------------------------- files
+VAULT = None  # api.py sets it to ctx["secret"]: the server reads keys from the vault, never through the CLI
+
+
 def _secret(name):
+    if VAULT:
+        return (VAULT(name) or "").strip()
     v = os.environ.get(name)
     if v:
         return v
@@ -154,6 +190,10 @@ def _secret(name):
 
 
 def delete(item_id, force=False):
+    _locked(lambda: _delete(item_id, force))
+
+
+def _delete(item_id, force):
     items = _read()
     keep = []
     for i in items:
@@ -169,6 +209,10 @@ def delete(item_id, force=False):
 
 
 def set_fav(item_id, value):
+    _locked(lambda: _set_fav(item_id, value))
+
+
+def _set_fav(item_id, value):
     items = _read()
     for i in items:
         if i["id"] == item_id:
@@ -177,6 +221,10 @@ def set_fav(item_id, value):
 
 
 def thumb(item_id):
+    if not valid_id(item_id):
+        return None
+    if not any(i["id"] == item_id for i in _read()):
+        return None
     t = STATE / "thumbs" / f"{item_id}.jpg"
     if not t.exists():
         src = next((i["path"] for i in _read() if i["id"] == item_id), None)
@@ -191,7 +239,7 @@ def make_zip(ids):
     items = [i for i in _read() if i["id"] in set(ids) and Path(i["path"]).exists()]
     if not items:
         raise ValueError("aucune image")
-    out = OUT_ROOT / "zips" / f"images-{time.strftime('%Y%m%d-%H%M%S')}.zip"
+    out = OUT_ROOT / "zips" / f"images-{time.strftime('%Y%m%d-%H%M%S')}-{os.urandom(2).hex()}.zip"
     out.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(out, "w", zipfile.ZIP_STORED) as z:
         for i in items:
@@ -219,6 +267,8 @@ def _multipart(fields):
 
 
 def _cloudflare(m, body, acc, tok):
+    if not re.fullmatch(r"[0-9a-fA-F]{32}", acc):
+        raise RuntimeError("CLOUDFLARE_ACCOUNT_ID invalide (32 caractères hexadécimaux attendus)")
     url = f"https://api.cloudflare.com/client/v4/accounts/{acc}/ai/run/{m['id']}"
     if m["fmt"] == "multipart":
         raw_body, ctype = _multipart(body)
@@ -256,9 +306,13 @@ def _horde(prompt, width, height):
         st = json.load(urllib.request.urlopen(urllib.request.Request(f"https://aihorde.net/api/v2/generate/status/{job}", headers=hdr), timeout=30))
         if st.get("done") and st.get("generations"):
             img = st["generations"][0]["img"]
-            if img.startswith("http"):
-                return urllib.request.urlopen(img, timeout=60).read()
-            return base64.b64decode(img)
+            if img.startswith("https://"):  # URL chosen by Horde: https only, size-capped, must really be an image
+                data = urllib.request.urlopen(img, timeout=60).read(MAX_IMAGE + 1)
+            else:
+                data = base64.b64decode(img)
+            if len(data) > MAX_IMAGE or not _kind(data):
+                raise ValueError("réponse Horde invalide (pas une image ou trop grosse)")
+            return data
         if st.get("faulted"):
             break
     raise RuntimeError("AI Horde : pas de résultat (file d'attente trop longue)")
@@ -320,7 +374,9 @@ def generate(prompt, model="flux", steps=None, seed=None, width=1024, height=102
             data, provider, cost = _horde(prompt, width, height), "horde", 0
         except (OSError, ValueError, KeyError) as e2:
             raise RuntimeError(f"{e} ; secours AI Horde en échec : {e2}")
-    ext = "png" if data[:4] == b"\x89PNG" else "webp" if data[:4] == b"RIFF" else "jpg"
+    ext = _kind(data)
+    if not ext:
+        raise RuntimeError("réponse inattendue (pas une image)")
     item_id = f"{int(time.time())}-{os.urandom(2).hex()}"
     path = Path(out).expanduser().resolve() if out else OUT_ROOT / time.strftime("%Y-%m") / f"{item_id}.{ext}"
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -334,7 +390,7 @@ def generate(prompt, model="flux", steps=None, seed=None, width=1024, height=102
     item = {"id": item_id, "at": time.time(), "prompt": prompt, "model": model if provider == "cloudflare" else "horde",
             "provider": provider, "style": style, "steps": steps, "seed": seed, "w": width, "h": height,
             "path": str(path), "neurons": cost, "topic": caller}
-    _write(_read() + [item])
+    _append(item)
     return item
 
 
