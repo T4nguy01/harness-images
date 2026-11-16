@@ -9,6 +9,7 @@ export function mount(el, ctx) {
         <textarea class="ui-textarea" name="prompt" rows="3" placeholder="${T("Décris l'image (l'anglais donne de meilleurs résultats) - Ctrl+Entrée pour générer", "Describe the image - Ctrl+Enter to generate")}"></textarea>
         <div style="${flex}">
           <select class="ui-select" name="model" style="width:auto;min-width:150px"></select>
+          <select class="ui-select" name="recipe" style="width:auto"></select>
           <select class="ui-select" name="style" style="width:auto"></select>
           <select class="ui-select" name="ratio" style="width:auto"></select>
           <input class="ui-input" name="steps" type="number" min="1" max="8" placeholder="steps" style="width:80px">
@@ -103,6 +104,7 @@ export function mount(el, ctx) {
   ctx.api("status").then((s) => {
     render(s);
     q("model").replaceChildren(...Object.entries(s.models).map(([k, m]) => opt(k, m.label)));
+    q("recipe").replaceChildren(opt("", T("Recette : aucune", "Recipe: none")), ...s.recipes.map((x) => opt(x.id, x.title[fr ? "fr" : "en"])));
     q("style").replaceChildren(opt("", T("Style : aucun", "Style: none")), ...s.styles.map((x) => opt(x, x)));
     q("ratio").replaceChildren(...s.ratios.map((x) => opt(x, x)));
     q("c_fallback").checked = s.config.fallback;
@@ -131,7 +133,7 @@ export function mount(el, ctx) {
     const b = q("go");
     b.disabled = true; say($("[data-err]"), ""); say($("[data-ok]"), ""); b.textContent = T("Génération…", "Generating…");
     try {
-      await ctx.api("generate", { method: "POST", body: { prompt, model: q("model").value, style: q("style").value, ratio: q("ratio").value,
+      await ctx.api("generate", { method: "POST", body: { prompt, model: q("model").value, style: q("style").value, recipe: q("recipe").value, ratio: q("ratio").value,
         steps: Number(q("steps").value) || null, seed: q("seed").value === "" ? null : Number(q("seed").value), n: Number(q("n").value),
         x2: q("x2").checked, source: source && source.id, strength: Number(q("strength").value) } });
       await refresh();

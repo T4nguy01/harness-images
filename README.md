@@ -5,7 +5,7 @@
 Free AI image generation for [Harness Maxxing](https://harness-maxxing.com), powered by Cloudflare Workers AI
 (FLUX.1 schnell and SDXL Lightning). No credit card, about 170 images a day on the free plan.
 
-- **Page "AI images"**: prompt, 4 models, 16 style presets, ratios, steps, seed, 1-4 variants, optional 2x upscale, image-to-image
+- **Page "AI images"**: prompt, 4 models, 56 style presets, 41 recipes (ready-made compositions: posters, covers, product shots, packaging...), ratios, steps, seed, 1-4 variants, optional 2x upscale, image-to-image
   ("Edit"), a gallery with thumbnails, favorites, prompt search, zip of favorites, the daily quota gauge and the settings below.
 - **`genimage` command**: `genimage "a lighthouse at dawn" --style watercolor --ratio 16:9`, usable by Claude in any session, agent or script.
 - **Skill** (optional) with a prompt-writing guide, so Claude turns a short request into an effective English prompt.

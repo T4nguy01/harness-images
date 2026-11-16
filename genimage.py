@@ -70,7 +70,57 @@ STYLES = {  # suffix appended to the prompt
     "sketch": "pencil sketch, graphite hatching, white paper, fine linework, monochrome",
     "product": "product photo on seamless white background, softbox lighting, soft shadow, ultra sharp, e-commerce style",
     "cyberpunk": "cyberpunk night city, neon reflections on wet streets, volumetric fog, magenta and cyan lights",
+    # inspired by the "IA Boss" 100-prompt guide (technical views, materials, products, crafts, light, lettering, food)
+    "exploded": "photorealistic exploded view, parts separated and aligned along the assembly axis, floating, screws and inner mechanisms visible, studio lighting, neutral background, three-quarter view",
+    "blueprint": "technical blueprint drawing, thin white lines on cyan blue background, orthographic projections, light dimension marks, sober annotations, industrial drawing",
+    "patent": "19th century patent plate illustration, black ink, fine hatching, multiple views, numbered callouts, yellowed sepia paper",
+    "knolling": "knolling photography, all parts laid flat in an orderly grid, perfectly top-down view, equal margins, soft even light, very sharp details",
+    "cutaway": "clean cutaway cross-section revealing inner materials and components, intact outer half, believable thickness, soft side light, neutral background",
+    "macro": "extreme macro photography, razor-thin depth of field, fine texture and micro-scratches in sharp focus, raking light",
+    "marble": "carved white marble statue, fine veining, museum lighting, soft shadows, dark neutral background",
+    "glass": "transparent glass sculpture, refractions and caustics, crisp highlights, studio backlight, clean dark background",
+    "liquid-metal": "liquid chrome metal sculpture, mirror reflections, flowing molten shapes, studio lighting, dark gradient background",
+    "clay": "handmade clay model, visible fingerprints, matte plasticine texture, soft studio light, shallow depth of field",
+    "papercut": "layered paper cut art, stacked colored paper layers with soft drop shadows, depth, shadow box frame",
+    "bronze": "patinated bronze statue, green oxidation in the crevices, warm museum spotlight, dark background",
+    "gold": "polished solid gold statue, deep warm reflections, dramatic spot lighting, black background",
+    "floating": "product floating in mid-air, soft shadow below, seamless pastel background, studio lighting, ultra sharp",
+    "splash": "product frozen in a dynamic liquid splash, high-speed photography, droplets in the air, backlit, clean background",
+    "vinyl-toy": "collectible vinyl designer toy figure, glossy plastic, studio product photo, shallow depth of field",
+    "crochet": "handmade crochet amigurumi, visible yarn stitches, soft natural light, cozy felt background",
+    "miniature": "tilt-shift miniature diorama, tiny detailed scene, soft daylight, shallow depth of field, handcrafted look",
+    "cross-stitch": "cross-stitch embroidery on linen fabric, visible stitches, warm natural light, close-up",
+    "halftone": "retro halftone print, visible dot pattern, limited ink colors, slight misregistration, paper texture",
+    "stained-glass": "stained glass window, bold lead lines, jewel-toned panes, light shining through",
+    "woodcarving": "hand-carved wood sculpture, visible chisel marks, warm grain, soft side light",
+    "dreamy": "dreamy soft light, glowing haze, pastel highlights, gentle bloom, ethereal mood",
+    "god-rays": "volumetric light rays through mist, atmospheric haze, backlit silhouette, cinematic depth",
+    "neon-night": "night city lit by neon signs, glossy reflections on wet ground, magenta and cyan glow, moody atmosphere",
+    "golden-rim": "dark scene with a thin golden rim light outlining the subject, deep shadows, luxurious mood",
+    "chibi": "chibi style character, oversized head, tiny body, big sparkling eyes, clean line art, pastel colors",
+    "kawaii": "kawaii pastel illustration, soft rounded shapes, blush cheeks, cute smiling face, gentle colors",
+    "ink-wash": "traditional ink wash painting, flowing black brush strokes, soft gray gradients, rice paper texture, lots of empty space",
+    "chrome-text": "3D chrome lettering, mirror finish, sharp reflections, dark studio background",
+    "crystal-text": "letters carved from clear crystal, refractions, sparkling highlights, soft glow",
+    "inflatable-text": "puffy inflatable balloon letters, glossy plastic, soft shadows, pastel background",
+    "neon-text": "glowing neon tube lettering on a dark brick wall, soft bloom, realistic electrical glow",
+    "ice-text": "letters made of ice, frost, translucent blue, cold backlight, water droplets",
+    "plant-text": "letters made of leaves and flowers, lush greenery, natural daylight, fresh colors",
+    "concrete-text": "raw concrete 3D lettering, rough texture, hard side light, minimal gray background",
+    "fine-dining": "fine dining plating, artistic sauce dots and microgreens on a white plate, overhead view, soft diffused light",
+    "food-photo": "appetizing food photography, steam rising, glossy textures, warm rustic wooden table, shallow depth of field",
+    "gelato": "studio shot of artisan ice cream, melting drips, creamy swirls, pastel background, crisp highlights",
+    "drink-splash": "sparkling drink with bubbles and ice cubes, dynamic splash, condensation on the glass, backlit, clean background",
 }
+def _recipes():
+    """Prompt templates (recipes.json next to this file): {subject} is replaced, nothing else is interpreted."""
+    try:
+        return {r["id"]: r for r in json.loads(Path(__file__).resolve().with_name("recipes.json").read_text())}
+    except (OSError, ValueError, KeyError, TypeError):
+        return {}
+
+
+RECIPES = _recipes()
 CONFIG_DEFAULT = {
     "caller_daily_max": 40,   # images a day for each caller other than the page (agent, session)
     "human_reserve_pct": 20,  # share of the daily budget kept for the page
@@ -320,10 +370,18 @@ def _horde(prompt, width, height):
 
 # ---------------------------------------------------------------- generate
 def generate(prompt, model="flux", steps=None, seed=None, width=1024, height=1024, out=None, topic="",
-             style=None, ratio=None, source=None, strength=0.6, x2=False):
+             style=None, ratio=None, source=None, strength=0.6, x2=False, recipe=None):
     prompt = (prompt or "").strip()
     if not prompt:
         raise ValueError("prompt vide")
+    if len(prompt) > 2000:
+        raise ValueError("prompt trop long (2000 caractères au maximum)")
+    if recipe:
+        r = RECIPES.get(recipe)
+        if not r:
+            raise ValueError(f"recette inconnue: {recipe} (genimage --recipes)")
+        prompt = r["template"].replace("{subject}", prompt)
+        ratio = ratio or r["ratio"]
     m = MODELS.get(model)
     if not m:
         raise ValueError(f"modèle inconnu: {model} ({', '.join(MODELS)})")
@@ -401,6 +459,8 @@ def main():
     a.add_argument("--model", default="flux", choices=list(MODELS))
     a.add_argument("--style", choices=list(STYLES))
     a.add_argument("--ratio", choices=list(RATIOS))
+    a.add_argument("--recipe", choices=list(RECIPES), help="prompt template; the prompt argument is then just the subject (genimage --recipes)")
+    a.add_argument("--recipes", action="store_true")
     a.add_argument("--size", help="WxH (sdxl, klein, dreamshaper; FLUX is always 1024x1024)")
     a.add_argument("--steps", type=int)
     a.add_argument("--seed", type=int)
@@ -415,6 +475,9 @@ def main():
     a = a.parse_args()
     if a.styles:
         print("\n".join(f"{k}: {v}" for k, v in STYLES.items()) + "\nratios: " + ", ".join(RATIOS))
+        return
+    if a.recipes:
+        print("\n".join(f"{k} ({r['ratio']}): {r['title']['en']}" for k, r in RECIPES.items()))
         return
     if a.config:
         print(json.dumps(config()))
@@ -435,7 +498,7 @@ def main():
             out = str(p.with_name(f"{p.stem}-{k + 1}{p.suffix}"))
         seed = a.seed + k if a.seed is not None else (int.from_bytes(os.urandom(3), "big") if n > 1 and MODELS[a.model]["seed"] else None)
         try:
-            it = generate(a.prompt, a.model, a.steps, seed, w, h, out, caller, a.style, a.ratio, a.source, a.strength, a.x2)
+            it = generate(a.prompt, a.model, a.steps, seed, w, h, out, caller, a.style, a.ratio, a.source, a.strength, a.x2, a.recipe)
         except Exception as e:
             sys.exit(f"Erreur: {e}")
         print(it["path"])

@@ -1,0 +1,371 @@
+[
+ {
+  "id": "movie-poster",
+  "title": {
+   "fr": "Affiche de film",
+   "en": "Movie poster"
+  },
+  "ratio": "2:3",
+  "template": "cinematic movie poster of {subject}, dramatic hero composition, bold central subject, atmospheric lighting, large empty area at the bottom for a title, high detail"
+ },
+ {
+  "id": "trading-card",
+  "title": {
+   "fr": "Carte à collectionner",
+   "en": "Trading card"
+  },
+  "ratio": "2:3",
+  "template": "collectible trading card featuring {subject}, ornate holographic border, character art in the center, stat boxes at the bottom, glossy foil highlights, studio scan look"
+ },
+ {
+  "id": "grid-9",
+  "title": {
+   "fr": "Grille de 9 vues",
+   "en": "3x3 grid of 9 views"
+  },
+  "ratio": "1:1",
+  "template": "a 3x3 grid of nine different views of {subject}, each in its own equal square, consistent style, different angles and details, thin white gutters"
+ },
+ {
+  "id": "album-cover",
+  "title": {
+   "fr": "Pochette d'album",
+   "en": "Album cover"
+  },
+  "ratio": "1:1",
+  "template": "square album cover artwork for {subject}, striking central image, bold graphic composition, moody color palette, print quality"
+ },
+ {
+  "id": "book-cover",
+  "title": {
+   "fr": "Couverture de livre",
+   "en": "Book cover"
+  },
+  "ratio": "2:3",
+  "template": "book cover illustration about {subject}, strong focal image, elegant balanced composition, space at the top for the title, rich colors"
+ },
+ {
+  "id": "magazine-cover",
+  "title": {
+   "fr": "Une de magazine",
+   "en": "Magazine cover"
+  },
+  "ratio": "2:3",
+  "template": "glossy magazine cover featuring {subject}, editorial photography, clean masthead area at the top, cover lines space on the left, studio light"
+ },
+ {
+  "id": "billboard",
+  "title": {
+   "fr": "Panneau publicitaire",
+   "en": "Billboard ad"
+  },
+  "ratio": "16:9",
+  "template": "large outdoor billboard advertising {subject}, city street at dusk, bold simple visual, space for a short slogan, realistic photo"
+ },
+ {
+  "id": "vintage-ad",
+  "title": {
+   "fr": "Pub de vieux journal",
+   "en": "Vintage newspaper ad"
+  },
+  "ratio": "3:4",
+  "template": "vintage 1950s newspaper advertisement for {subject}, halftone illustration, aged yellowed paper, retro typography blocks, ink texture"
+ },
+ {
+  "id": "timeline",
+  "title": {
+   "fr": "Frise chronologique",
+   "en": "Timeline"
+  },
+  "ratio": "16:9",
+  "template": "clean horizontal timeline infographic about {subject}, evenly spaced milestones with small icons, flat design, light background, generous spacing"
+ },
+ {
+  "id": "store-shelf",
+  "title": {
+   "fr": "Produit en rayon",
+   "en": "Product on a shelf"
+  },
+  "ratio": "4:3",
+  "template": "{subject} displayed on a supermarket shelf among other products, realistic retail photo, soft store lighting, shallow depth of field"
+ },
+ {
+  "id": "store-display",
+  "title": {
+   "fr": "Présentoir de magasin",
+   "en": "Store display"
+  },
+  "ratio": "3:4",
+  "template": "eye-catching retail floor display stand for {subject}, neatly arranged products, bright store lighting, wide angle photo"
+ },
+ {
+  "id": "white-background",
+  "title": {
+   "fr": "Produit fond blanc",
+   "en": "Product on white"
+  },
+  "ratio": "1:1",
+  "template": "{subject} on a pure white seamless background, e-commerce product photo, softbox lighting, soft natural shadow, sharp and centered"
+ },
+ {
+  "id": "product-in-hand",
+  "title": {
+   "fr": "Produit en main",
+   "en": "Product in hand"
+  },
+  "ratio": "4:3",
+  "template": "a hand holding {subject}, natural skin, lifestyle product photo, blurred bright background, soft daylight"
+ },
+ {
+  "id": "color-palette",
+  "title": {
+   "fr": "Palette de couleurs",
+   "en": "Color palette"
+  },
+  "ratio": "1:1",
+  "template": "{subject} shown with a row of matching color swatches beside it, clean flat lay, soft studio light, neutral background"
+ },
+ {
+  "id": "size-reference",
+  "title": {
+   "fr": "Repère de taille",
+   "en": "Size reference"
+  },
+  "ratio": "4:3",
+  "template": "{subject} next to a coin and a hand for scale, clean top-down product photo, soft light, neutral background"
+ },
+ {
+  "id": "unboxing",
+  "title": {
+   "fr": "Coffret complet",
+   "en": "Complete box set"
+  },
+  "ratio": "4:3",
+  "template": "open gift box set of {subject} with everything laid out neatly inside, premium packaging, soft studio light"
+ },
+ {
+  "id": "shop-screen",
+  "title": {
+   "fr": "Écran de boutique",
+   "en": "Online shop screen"
+  },
+  "ratio": "16:9",
+  "template": "modern online store product page mockup for {subject} on a laptop screen, clean layout, soft desk scene, realistic"
+ },
+ {
+  "id": "blister-figure",
+  "title": {
+   "fr": "Figurine sous blister",
+   "en": "Figure in blister pack"
+  },
+  "ratio": "2:3",
+  "template": "action figure of {subject} sealed in a retro blister pack on a cardboard card, colorful packaging art, toy aisle photo"
+ },
+ {
+  "id": "toy-box",
+  "title": {
+   "fr": "Boîte de jouet",
+   "en": "Toy box"
+  },
+  "ratio": "3:4",
+  "template": "colorful toy packaging box for {subject}, window showing the toy, playful illustrations, product photo on a plain background"
+ },
+ {
+  "id": "keychain",
+  "title": {
+   "fr": "Porte-clés",
+   "en": "Keychain"
+  },
+  "ratio": "1:1",
+  "template": "cute keychain of {subject} hanging from a metal ring, glossy enamel, macro product photo, soft background blur"
+ },
+ {
+  "id": "collection-shelf",
+  "title": {
+   "fr": "Étagère de collection",
+   "en": "Collector shelf"
+  },
+  "ratio": "4:3",
+  "template": "wooden display shelf with a collection of small figures of {subject}, warm accent lighting, cozy room, shallow depth of field"
+ },
+ {
+  "id": "limited-edition",
+  "title": {
+   "fr": "Édition limitée",
+   "en": "Limited edition"
+  },
+  "ratio": "3:4",
+  "template": "luxury limited edition packaging of {subject}, black and gold, numbered certificate card, dramatic spotlight"
+ },
+ {
+  "id": "hands-only",
+  "title": {
+   "fr": "Les mains seules",
+   "en": "Hands only"
+  },
+  "ratio": "4:3",
+  "template": "close-up of hands working on {subject}, only hands visible, natural light, authentic textures, documentary photo"
+ },
+ {
+  "id": "craftsman",
+  "title": {
+   "fr": "Artisan au travail",
+   "en": "Craftsman at work"
+  },
+  "ratio": "4:3",
+  "template": "skilled craftsperson making {subject} in a workshop, warm light, tools and shavings around, candid documentary photo"
+ },
+ {
+  "id": "quote-card",
+  "title": {
+   "fr": "Carte citation",
+   "en": "Quote card"
+  },
+  "ratio": "1:1",
+  "template": "minimal quote card background inspired by {subject}, soft gradient and subtle texture, large empty space in the center for text"
+ },
+ {
+  "id": "illustrated-book",
+  "title": {
+   "fr": "Livre illustré",
+   "en": "Illustrated book spread"
+  },
+  "ratio": "3:2",
+  "template": "open picture book showing {subject}, charming hand-drawn illustration on the page, warm paper, soft light"
+ },
+ {
+  "id": "doodle-page",
+  "title": {
+   "fr": "Page de gribouillis",
+   "en": "Doodle page"
+  },
+  "ratio": "3:4",
+  "template": "notebook page full of playful hand-drawn doodles about {subject}, ballpoint ink, small arrows and stars, paper texture"
+ },
+ {
+  "id": "game-concept",
+  "title": {
+   "fr": "Concept de jeu vidéo",
+   "en": "Game concept art"
+  },
+  "ratio": "16:9",
+  "template": "video game concept art of {subject}, epic environment, painterly digital style, dramatic light, strong depth"
+ },
+ {
+  "id": "painted-film",
+  "title": {
+   "fr": "Scène de cinéma peinte",
+   "en": "Painted film scene"
+  },
+  "ratio": "16:9",
+  "template": "oil-painted cinematic scene of {subject}, wide shot, rich brushwork, dramatic lighting, movie-poster mood"
+ },
+ {
+  "id": "watercolor-scene",
+  "title": {
+   "fr": "Aquarelle",
+   "en": "Watercolor scene"
+  },
+  "ratio": "3:2",
+  "template": "soft watercolor painting of {subject}, wet-on-wet washes, visible paper grain, delicate colors, loose edges"
+ },
+ {
+  "id": "embroidered-patch",
+  "title": {
+   "fr": "Écusson brodé",
+   "en": "Embroidered patch"
+  },
+  "ratio": "1:1",
+  "template": "embroidered patch of {subject}, thick thread texture, stitched border, on a denim background, macro photo"
+ },
+ {
+  "id": "torn-collage",
+  "title": {
+   "fr": "Collage déchiré",
+   "en": "Torn paper collage"
+  },
+  "ratio": "3:4",
+  "template": "mixed-media torn paper collage about {subject}, ripped edges, vintage magazine cutouts, tape, layered textures"
+ },
+ {
+  "id": "marker-sketch",
+  "title": {
+   "fr": "Croquis au feutre",
+   "en": "Marker sketch"
+  },
+  "ratio": "4:3",
+  "template": "quick felt-tip marker sketch of {subject}, bold strokes, soft color fills, white paper, design-notebook look"
+ },
+ {
+  "id": "pyrography",
+  "title": {
+   "fr": "Pyrogravure",
+   "en": "Wood burning art"
+  },
+  "ratio": "1:1",
+  "template": "pyrography wood burning art of {subject}, dark scorched lines, warm wood grain, close-up"
+ },
+ {
+  "id": "embossed-leather",
+  "title": {
+   "fr": "Cuir repoussé",
+   "en": "Embossed leather"
+  },
+  "ratio": "1:1",
+  "template": "tooled embossed leather panel showing {subject}, stitched edge, rich brown tones, raking light"
+ },
+ {
+  "id": "window-blinds",
+  "title": {
+   "fr": "Soleil à travers les stores",
+   "en": "Light through blinds"
+  },
+  "ratio": "4:3",
+  "template": "{subject} lit by stripes of sunlight through window blinds, strong shadows, warm afternoon mood, photo"
+ },
+ {
+  "id": "lamp-in-dark",
+  "title": {
+   "fr": "Lampe dans le noir",
+   "en": "Lamp in the dark"
+  },
+  "ratio": "4:3",
+  "template": "{subject} lit only by a single warm lamp in a dark room, deep shadows, cozy intimate mood, photo"
+ },
+ {
+  "id": "monochrome",
+  "title": {
+   "fr": "Bain monochrome",
+   "en": "Monochrome wash"
+  },
+  "ratio": "1:1",
+  "template": "{subject} in a single-color monochrome scene, every element in shades of one hue, soft gradient lighting, minimal"
+ },
+ {
+  "id": "gourmet-plate",
+  "title": {
+   "fr": "Dressage gastronomique",
+   "en": "Gourmet plating"
+  },
+  "ratio": "1:1",
+  "template": "{subject} elegantly plated on a white plate, restaurant style, overhead view, artistic sauce, soft diffused light"
+ },
+ {
+  "id": "melting-heart",
+  "title": {
+   "fr": "Coeur fondant",
+   "en": "Molten center"
+  },
+  "ratio": "4:3",
+  "template": "cut open {subject} with a molten center flowing out, macro food photo, steam, warm light, shallow depth of field"
+ },
+ {
+  "id": "mini-pastry",
+  "title": {
+   "fr": "Pâtisserie miniature",
+   "en": "Miniature pastry"
+  },
+  "ratio": "1:1",
+  "template": "miniature pastry inspired by {subject}, tiny perfect details, pastel colors, studio macro photo"
+ }
+]

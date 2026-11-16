@@ -19,7 +19,7 @@ def _lib():
 
 def _status(g, query=None):
     q = query or {}
-    return {"quota": g.quota(), "config": g.config(), "styles": list(g.STYLES), "ratios": list(g.RATIOS),
+    return {"quota": g.quota(), "config": g.config(), "styles": list(g.STYLES), "recipes": [{"id": k, "title": r["title"], "ratio": r["ratio"]} for k, r in g.RECIPES.items()], "ratios": list(g.RATIOS),
             "models": {k: {"label": v["label"], "sized": v["sized"], "seed": v["seed"], "img2img": bool(v.get("img2img"))} for k, v in g.MODELS.items()},
             "items": g.history(80, str(q.get("q", "")), str(q.get("fav", "")) == "1")}
 
@@ -43,7 +43,7 @@ def handle(ctx, method, path, query, body):
                 seed = None if seed in (None, "") else int(seed) + k
                 items.append(g.generate(b.get("prompt"), b.get("model", "flux"), b.get("steps") or None, seed,
                                         b.get("width") or 1024, b.get("height") or 1024, topic="page", style=b.get("style") or None,
-                                        ratio=b.get("ratio") or None, source=src, strength=float(b.get("strength") or 0.6), x2=bool(b.get("x2"))))
+                                        ratio=b.get("ratio") or None, source=src, strength=float(b.get("strength") or 0.6), x2=bool(b.get("x2")), recipe=b.get("recipe") or None))
         except (ValueError, RuntimeError, OSError) as e:
             return 400, {"error": "failed", "message": str(e), "done": len(items)}
         return {"items": items, "quota": g.quota()}
